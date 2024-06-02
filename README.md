@@ -15,41 +15,45 @@ POSTECH과 H energy가 함께 주최하는 태양광 발전량 예측 대회 - �
 개발 기간(duration): 23.10.22 ~ 23.11.17
 
 
-## ❤️ 팀 구성 및 역할 (Team members)
+## 🔥 팀 구성 및 역할
 - 이정환(팀장): 태양전지 도메인 조사, 파생변수(시간변환/계절변환), LGBM, LSTM, MLP+LGBM 앙상블,RNN+LGBM 앙상블,SCINet
 - 김동환: 태양전지 도메인 조사, 시계열 클러스터링, 회귀+LGBM 앙상블,구조적시계열모형
 - 권가민: 앙상블, XGB, 상관분석, x변수 클러스터링(오차율/계절), 오차율/발전량 패턴파악(시간별/계절별), 
 - 박채원: 앙상블,LGBM, 상관분석, 선형회귀계절, x변수 군집화(오차율/계절), 변수선택(계절)
 - 박준영: 앙상블, 상관분석, 선형회귀시간/계절, 유사도예측, x변수 군집화(오차율/계절)
 
-## 🔍 분석 흐름(flow)
+## 🔍 분석 흐름
 1. 도메인 조사
-2. 데이터 전처리(기사 데이터 감성분석, 데이터 병합, 결측치 보간, 자료형 수치형으로 통일, 시간 순 정렬)    
-4. EDA (X변수간 EDA, Y~X변수간 EDA)
-5. 등락률(continuous) -> 매수/유지/매도(categorical) 라벨링
-6. 변수 선택 - feature selection
-      <br>(인과관계 검정, VIF, PCA, 요인분석, feature importance, KS검정 시도)
-7. labeled y변수 예측 모델링 (with imbalanced class problem😭)
-8. 예측 결과 시각화 및 결과 분석
+2. EDA (모델별 발전량 예측/시간대별 예측량의 분산,평균/계절 별 오차율/상관관계)
+3. 변수 선택/모델링 - 성능향상을 위해 다양한 방법 활용
+4. 예측 결과 시각화 및 분석/점수 계산
 
 
-## 📈 모델링 개요
-![화면 캡처 2023-06-14 212644](https://github.com/mminiiii/ModelingStockBuySellPrediction/assets/90174257/ef628d73-e77e-4e37-a0ec-97bb7c19c735)
+## 📈 공모전 개요
+![image](https://github.com/donghwan0318/Solar-Power-Generation-Forecasting-Using-Weather-and-Generation-Data/assets/136334371/3bd9ed50-fe2f-4906-a29d-94f5f97cd2d7)
 
 
-## 🚨 클래스 불균형 문제
-매수/매도에 비해 예측 라벨의 수가 많아서 클래스 불균형이 심각 -> 매수/매도에 대한 예측 성능 저조
+## 🚨 특수한 발전량 패턴 존재
+![image](https://github.com/donghwan0318/Solar-Power-Generation-Forecasting-Using-Weather-and-Generation-Data/assets/136334371/52dfcb34-d0aa-4dc4-9ec5-5242f0898e4f)
+
+일반적으로 정오에 발전량이 최대치를 보이는 커브 형태를 띠지만, 특정한 날에는 그렇지 않을 때가 있음 
 
 💡 해결을 위한 노력들
-- 단순 정확도나 f1-score가 아닌 평가지표 커스텀을 통해 프로젝트 목적에 적합한 모델 선택 (ex. 매수, 매도의 정확도, 정밀도의 평균 / 매수, 매도, 유지 정확도의 평균 etc)
-- 모델 학습 시 클래스별 샘플 가중치 반영
-- 라벨 회귀 예측 -> 검증 set으로 분류 threshold 결정 -> 최종 분류
+- 단순 그러한 특수한 패턴을 띄는 날들을 클러스터링,변수선택법 등을 통해 분리하고자 하였음(시계열 클러스터링, 오차율기반 클러스터링, 계절별, 시간별, 변수선택법), 이후 클러스터별 개별 모델링 진행
+- 특수한 패턴을 띄는 날들이 과거에 하루는 존재할 것이다 판단하고, 백터 유사도를 이용하여 파생변수를 생성
+
+## 클러스터링
+![image](https://github.com/donghwan0318/Solar-Power-Generation-Forecasting-Using-Weather-and-Generation-Data/assets/136334371/7b6276b6-9ab5-4870-8887-1f52989ce87e)
+![image](https://github.com/donghwan0318/Solar-Power-Generation-Forecasting-Using-Weather-and-Generation-Data/assets/136334371/22b6b698-1d23-44a5-81aa-cf1717972486)
 
 
-## 📃 결과
-![화면 캡처 2023-06-14 212213](https://github.com/mminiiii/ModelingStockBuySellPrediction/assets/90174257/60fad7c1-5b94-4a24-a004-aaed0c71976c)
-![화면 캡처 2023-06-14 212242](https://github.com/mminiiii/ModelingStockBuySellPrediction/assets/90174257/ab0a5ce1-e32e-4508-a379-f7543abe4bbd)
-![화면 캡처 2023-06-14 212511](https://github.com/mminiiii/ModelingStockBuySellPrediction/assets/90174257/4a5403a3-b952-433f-bd1c-527da7ebc030)
-![화면 캡처 2023-06-14 212533](https://github.com/mminiiii/ModelingStockBuySellPrediction/assets/90174257/e84f0203-acd0-4baa-9579-9108bd9abd88)
-![화면 캡처 2023-06-14 212603](https://github.com/mminiiii/ModelingStockBuySellPrediction/assets/90174257/c36b4367-947a-4837-9d38-32889bfea767)
-![화면 캡처 2023-06-14 212619](https://github.com/mminiiii/ModelingStockBuySellPrediction/assets/90174257/1206e5ed-a46d-47a9-b6d2-e7b03b96fd66)
+
+## 📃 모델링
+![image](https://github.com/donghwan0318/Solar-Power-Generation-Forecasting-Using-Weather-and-Generation-Data/assets/136334371/876ba0d6-23e0-405e-a68b-a52a7b07cd3a)
+![image](https://github.com/donghwan0318/Solar-Power-Generation-Forecasting-Using-Weather-and-Generation-Data/assets/136334371/9a53886e-e74a-4617-8d93-78962fd65639)
+![image](https://github.com/donghwan0318/Solar-Power-Generation-Forecasting-Using-Weather-and-Generation-Data/assets/136334371/3480801a-ef37-4977-8661-0fa8c4b0eb5c)
+
+
+
+
+
