@@ -1,0 +1,136 @@
+---
+title: "Untitled"
+author: "Donghwan Kim"
+date: "2023-10-29"
+output: html_document
+---
+
+```{r message=FALSE}
+library(tidyverse)
+library(magrittr)
+library(lubridate)
+# grid.arrage
+library(gridExtra)
+#corrplot
+library(corrplot)
+library(reshape2)
+library(dtwclust)
+library(lubridate)
+```
+
+```{r message=FALSE}
+gens <- read_csv("../gens.csv")
+gens$time = gens$time - hours(16)
+gens$month <- month(gens$time)
+gens_fall <- gens %>% filter(month>=9,month<=11)
+gens_fall %<>% select(amount)
+a<-tslist(gens_fall)
+```
+
+```{r}
+gens_fall
+```
+
+
+```{r}
+arr <- array(a,dim=c(24,1,135))
+array_data <- array(a, dim = c(24, 1, 135))  # 예시 3D 배열, 실제 데이터를 사용
+
+# 빈 리스트 생성
+arr_list <- list()
+
+# 배열을 리스트로 변환하여 리스트에 추가
+for (i in 1:dim(array_data)[3]) {
+  sub_array <- array_data[,,i]
+  arr_list <- append(arr_list, list(sub_array))
+}
+
+```
+
+```{r}
+eval_clust
+```
+
+```{r}
+pc.dtw<-tsclust(arr_list,k=2L:10L,)
+eval_clust<-sapply(pc.dtw, cvi)
+plot(eval_clust[1,],type="l", main="sil", xlab="The number of clusters", ylab="maximize")
+plot(eval_clust[2,],type="l", main="score function", xlab="The number of clusters", ylab="maximize")
+plot(eval_clust[3,],type="l", main="Calinski-Harabasz index", xlab="The number of clusters", ylab="maximize")
+plot(eval_clust[4,],type="l", main="Davies-Bouldin index", xlab="The number of clusters", ylab="minimize")
+plot(eval_clust[5,],type="l", main="Modified Davies-Bouldin index", xlab="The number of clusters", ylab="minimize")
+plot(eval_clust[6,],type="l", main="Dunn index", xlab="The number of clusters", ylab="maximize")
+plot(eval_clust[7,],type="l", main="COP index", xlab="The number of clusters", ylab="minimize")
+```
+
+
+```{r}
+dtw_cluster = tsclust(arr_list, type="partitional",k=7,
+distance="dtw_basic",centroid = "pam",seed=1234,trace=T,
+args = tsclust_args(dist = list(window.size = 60)))
+plot(dtw_cluster)
+dtw_cluster
+```
+
+
+```{r}
+amount<-read_csv("test.csv")
+summary_amount<- amount %>% select(m0,m1,m2,m3,amount,month,day,hour) %>% 
+  group_by(month,hour) %>% summarise(e0=mean(m0),e1=mean(m1),e2=mean(m2),e3=mean(m3),
+                                et=mean(amount))
+summary_amount %<>% mutate(id = month*100+hour)
+```
+```{r}
+summary_amount %>% ggplot(aes(x=id)) + geom_line(aes(y=et)) +
+  geom_line(aes(y=e0),color="RED")+
+  geom_line(aes(y=e1),color="BLUE")
+```
+
+
+```{r}
+for (i in 1:12){
+  v <- paste0("s",i)
+  assign(v,summary_amount %>% filter(month==i))
+}
+
+```
+
+```{r}
+g_list<-c()
+for (i in 1:12){
+  v<-paste0("s",i)
+  df<-get(v)
+  g<-ggplot(df)+ geom_line(aes(x=id,y=e0),color="red") + 
+  geom_line(aes(x=id,y=e1),color="blue") + 
+  geom_line(aes(x=id,y=e2),color="green") + 
+  geom_line(aes(x=id,y=e3),color="yellow") + 
+  geom_line(aes(x=id,y=et))+labs(x=paste0(i,"월"))
+  
+  g_list<-c(g_list,list(g))
+}
+```
+
+
+```{r}
+grid.arrange(grobs=g_list[1:4] , ncol=2)
+```
+
+```{r}
+grid.arrange(grobs=g_list[5:8] , ncol=2)
+```
+
+```{r}
+grid.arrange(grobs=g_list[9:12] , ncol=2)
+```
+
+```{r}
+library(remotes)
+install_github("junhewk/RcppMecab")
+```
+
+```{r}
+library(RcppMecab)
+text = enc2utf8("오늘은 날씨가 맑습니다.")
+pos(sentence = text)
+```
+
